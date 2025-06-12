@@ -738,7 +738,7 @@ pub struct MediaPlaylist {
     pub target_duration: u64,
     /// `#EXT-X-MEDIA-SEQUENCE:<number>`
     pub media_sequence: u64,
-    pub segments: Vec<MediaSegment>,
+    pub segments: Vec<MediaSegmentType>,
     /// `#EXT-X-DISCONTINUITY-SEQUENCE:<number>`
     pub discontinuity_sequence: u64,
     /// `#EXT-X-ENDLIST`
@@ -868,6 +868,23 @@ impl Default for MediaPlaylistType {
 // Media Segment
 // -----------------------------------------------------------------------------------------------
 
+#[derive(Debug, PartialEq, Clone)]
+pub enum MediaSegmentType {
+    /// Regular HLS segment (#EXTINF)
+    Full(MediaSegment),
+    /// HLS-LL: Partial segment (#EXT-X-PART)
+    Partial(Part),
+}
+
+impl MediaSegmentType {
+    pub fn write_to<T: Write>(&self, w: &mut T) -> std::io::Result<()> {
+        match self {
+            MediaSegmentType::Full(s) => s.write_to(w),
+            MediaSegmentType::Partial(s) => s.write_to(w),
+        }
+    }
+}
+
 /// A [Media Segment](https://tools.ietf.org/html/draft-pantos-http-live-streaming-19#section-3)
 /// is specified by a URI and optionally a byte range.
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -891,9 +908,6 @@ pub struct MediaSegment {
     pub daterange: Option<DateRange>,
     /// `#EXT-`
     pub unknown_tags: Vec<ExtTag>,
-
-    // LL-HLS specific fields
-    pub parts: Vec<Part>,
 }
 
 impl MediaSegment {
@@ -931,9 +945,6 @@ impl MediaSegment {
             write!(w, "#EXT-X-DATERANGE:")?;
             v.write_attributes_to(w)?;
             writeln!(w)?;
-        }
-        for part in &self.parts {
-            part.write_to(w)?;
         }
         for unknown_tag in &self.unknown_tags {
             writeln!(w, "{}", unknown_tag)?;

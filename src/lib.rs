@@ -38,7 +38,7 @@
 //! Creating a playlist and writing it back to a vec/file
 //!
 //! ```
-//! use m3u8_rs::{MediaPlaylist, MediaPlaylistType, MediaSegment};
+//! use m3u8_rs::{MediaPlaylist, MediaPlaylistType, MediaSegment, MediaSegmentType};
 //!
 //! let playlist = MediaPlaylist {
 //!     version: Some(6),
@@ -48,12 +48,12 @@
 //!     end_list: true,
 //!     playlist_type: Some(MediaPlaylistType::Vod),
 //!     segments: vec![
-//!         MediaSegment {
+//!         MediaSegmentType::Full(MediaSegment {
 //!             uri: "20140311T113819-01-338559live.ts".into(),
 //!             duration: 2.002,
 //!             title: Some("title".into()),
 //!             ..Default::default()
-//!         },
+//!         }),
 //!     ],
 //!     ..Default::default()
 //! };
@@ -69,18 +69,18 @@
 //!
 //! ```
 //! use std::sync::atomic::Ordering;
-//! use m3u8_rs::{WRITE_OPT_FLOAT_PRECISION, MediaPlaylist, MediaSegment};
+//! use m3u8_rs::{WRITE_OPT_FLOAT_PRECISION, MediaPlaylist, MediaSegment, MediaSegmentType};
 //!
 //! WRITE_OPT_FLOAT_PRECISION.store(5, Ordering::Relaxed);
 //!
 //! let playlist = MediaPlaylist {
 //!     target_duration: 3,
 //!     segments: vec![
-//!         MediaSegment {
+//!         MediaSegmentType::Full(MediaSegment {
 //!             duration: 2.9,
 //!             title: Some("title".into()),
 //!             ..Default::default()
-//!         },
+//!         }),
 //!     ],
 //!     ..Default::default()
 //! };

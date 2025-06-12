@@ -208,12 +208,12 @@ fn create_segment_float_inf() {
         discontinuity_sequence: 1234,
         end_list: true,
         playlist_type: Some(MediaPlaylistType::Vod),
-        segments: vec![MediaSegment {
+        segments: vec![MediaSegmentType::Full(MediaSegment {
             uri: "20140311T113819-01-338559live.ts".into(),
             duration: 2.000f32,
             title: Some("title".into()),
             ..Default::default()
-        }],
+        })],
         ..Default::default()
     });
 
@@ -336,12 +336,12 @@ fn create_and_parse_media_playlist_empty() {
 fn create_and_parse_media_playlist_single_segment() {
     let mut playlist_original = Playlist::MediaPlaylist(MediaPlaylist {
         target_duration: 2,
-        segments: vec![MediaSegment {
+        segments: vec![MediaSegmentType::Full(MediaSegment {
             uri: "20140311T113819-01-338559live.ts".into(),
             duration: 2.002,
             title: Some("hey".into()),
             ..Default::default()
-        }],
+        })],
         ..Default::default()
     });
     let playlist_parsed = print_create_and_parse_playlist(&mut playlist_original);
@@ -364,7 +364,7 @@ fn create_and_parse_media_playlist_full() {
             other_attributes: Default::default(),
         }),
         independent_segments: true,
-        segments: vec![MediaSegment {
+        segments: vec![MediaSegmentType::Full(MediaSegment {
             uri: "20140311T113819-01-338559live.ts".into(),
             duration: 2.002,
             title: Some("338559".into()),
@@ -414,7 +414,7 @@ fn create_and_parse_media_playlist_full() {
                 rest: Some("DURATION=2.002".into()),
             }],
             ..Default::default()
-        }],
+        })],
         unknown_tags: vec![],
 
         server_control: Default::default(),
@@ -492,76 +492,76 @@ fn create_and_parse_media_playlist_llhls() {
             other_attributes: Default::default(),
         }),
         independent_segments: true,
-        segments: vec![MediaSegment {
-            uri: "20140311T113819-01-338559live.ts".into(),
-            duration: 2.002,
-            title: Some("338559".into()),
-            byte_range: Some(ByteRange {
-                length: 137116,
-                offset: Some(4559),
-            }),
-            discontinuity: true,
-            key: Some(Key {
-                method: KeyMethod::None,
-                uri: Some("https://secure.domain.com".into()),
-                iv: Some("0xb059217aa2649ce170b734".into()),
-                keyformat: Some("xXkeyformatXx".into()),
-                keyformatversions: Some("xXFormatVers".into()),
-            }),
-            map: Some(Map {
-                uri: "www.map-uri.com".into(),
+        segments: vec![
+            MediaSegmentType::Full(MediaSegment {
+                uri: "20140311T113819-01-338559live.ts".into(),
+                duration: 2.002,
+                title: Some("338559".into()),
                 byte_range: Some(ByteRange {
                     length: 137116,
                     offset: Some(4559),
                 }),
-                other_attributes: Default::default(),
-            }),
-            program_date_time: Some(
-                chrono::FixedOffset::east(8 * 3600)
-                    .ymd(2010, 2, 19)
-                    .and_hms_milli(14, 54, 23, 31),
-            ),
-            daterange: Some(DateRange {
-                id: "9999".into(),
-                class: Some("class".into()),
-                start_date: chrono::FixedOffset::east(8 * 3600)
-                    .ymd(2010, 2, 19)
-                    .and_hms_milli(14, 54, 23, 31),
-                end_date: None,
-                duration: None,
-                planned_duration: Some("40.000".parse().unwrap()),
-                x_prefixed: Some(HashMap::from([(
-                    "X-client-attribute".into(),
-                    "whatever".into(),
-                )])),
-                end_on_next: false,
-                other_attributes: Default::default(),
-            }),
-            unknown_tags: vec![],
-            parts: vec![
-                Part {
-                    uri: "part0.ts".into(),
-                    duration: 0.5,
-                    independent: true,
-                    gap: false,
+                discontinuity: true,
+                key: Some(Key {
+                    method: KeyMethod::None,
+                    uri: Some("https://secure.domain.com".into()),
+                    iv: Some("0xb059217aa2649ce170b734".into()),
+                    keyformat: Some("xXkeyformatXx".into()),
+                    keyformatversions: Some("xXFormatVers".into()),
+                }),
+                map: Some(Map {
+                    uri: "www.map-uri.com".into(),
                     byte_range: Some(ByteRange {
-                        length: 50000,
-                        offset: Some(0),
+                        length: 137116,
+                        offset: Some(4559),
                     }),
-                },
-                Part {
-                    uri: "part1.ts".into(),
-                    duration: 0.5,
-                    independent: false,
-                    gap: false,
-                    byte_range: Some(ByteRange {
-                        length: 50000,
-                        offset: Some(50000),
-                    }),
-                },
-            ],
-            ..Default::default()
-        }],
+                    other_attributes: Default::default(),
+                }),
+                program_date_time: Some(
+                    chrono::FixedOffset::east(8 * 3600)
+                        .ymd(2010, 2, 19)
+                        .and_hms_milli(14, 54, 23, 31),
+                ),
+                daterange: Some(DateRange {
+                    id: "9999".into(),
+                    class: Some("class".into()),
+                    start_date: chrono::FixedOffset::east(8 * 3600)
+                        .ymd(2010, 2, 19)
+                        .and_hms_milli(14, 54, 23, 31),
+                    end_date: None,
+                    duration: None,
+                    planned_duration: Some("40.000".parse().unwrap()),
+                    x_prefixed: Some(HashMap::from([(
+                        "X-client-attribute".into(),
+                        "whatever".into(),
+                    )])),
+                    end_on_next: false,
+                    other_attributes: Default::default(),
+                }),
+                unknown_tags: vec![],
+                ..Default::default()
+            }),
+            MediaSegmentType::Partial(Part {
+                uri: "part0.ts".into(),
+                duration: 0.5,
+                independent: true,
+                gap: false,
+                byte_range: Some(ByteRange {
+                    length: 50000,
+                    offset: Some(0),
+                }),
+            }),
+            MediaSegmentType::Partial(Part {
+                uri: "part1.ts".into(),
+                duration: 0.5,
+                independent: false,
+                gap: false,
+                byte_range: Some(ByteRange {
+                    length: 50000,
+                    offset: Some(50000),
+                }),
+            }),
+        ],
         unknown_tags: vec![],
         server_control: Some(ServerControl {
             can_skip_until: Some(12.0),

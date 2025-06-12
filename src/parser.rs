@@ -476,13 +476,15 @@ fn media_playlist_from_tags(mut tags: Vec<MediaPlaylistTag>) -> MediaPlaylist {
                     next_segment.key = encryption_key.clone();
                     next_segment.map = map.clone();
                     next_segment.uri = u;
-                    media_playlist.segments.push(next_segment);
+                    media_playlist
+                        .segments
+                        .push(MediaSegmentType::Full(next_segment));
                     next_segment = MediaSegment::empty();
                     encryption_key = None;
                     map = None;
                 }
                 SegmentTag::Part(p) => {
-                    next_segment.parts.push(p);
+                    media_playlist.segments.push(MediaSegmentType::Partial(p));
                 }
                 SegmentTag::Unknown(t) => {
                     next_segment.unknown_tags.push(t);
