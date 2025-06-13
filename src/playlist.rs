@@ -874,6 +874,8 @@ pub enum MediaSegmentType {
     Full(MediaSegment),
     /// HLS-LL: Partial segment (#EXT-X-PART)
     Partial(Part),
+    /// HLS-LL: Preload hint (#EXT-X-PRELOAD-HINT)
+    PreloadHint(PreloadHint),
 }
 
 impl MediaSegmentType {
@@ -881,6 +883,7 @@ impl MediaSegmentType {
         match self {
             MediaSegmentType::Full(s) => s.write_to(w),
             MediaSegmentType::Partial(s) => s.write_to(w),
+            MediaSegmentType::PreloadHint(s) => s.write_to(w),
         }
     }
 }
@@ -1413,7 +1416,8 @@ impl Skip {
 pub struct PreloadHint {
     pub hint_type: String,
     pub uri: String,
-    pub byte_range: Option<ByteRange>,
+    pub byte_range_start: Option<u64>,
+    pub byte_range_length: Option<u64>,
 }
 
 impl PreloadHint {
@@ -1424,11 +1428,15 @@ impl PreloadHint {
             .ok_or_else(|| String::from("EXT-X-PRELOAD-HINT without mandatory TYPE attribute"))?;
         let uri = quoted_string!(attrs, "URI")
             .ok_or_else(|| String::from("EXT-X-PRELOAD-HINT without mandatory URI attribute"))?;
-        let byte_range = quoted_string_parse!(attrs, "BYTERANGE", |s: &str| s.parse::<ByteRange>());
+        let byte_range_start =
+            quoted_string_parse!(attrs, "BYTERANGE-START", |s: &str| s.parse::<u64>());
+        let byte_range_length =
+            quoted_string_parse!(attrs, "BYTERANGE-LENGTH", |s: &str| s.parse::<u64>());
         Ok(PreloadHint {
             hint_type,
             uri,
-            byte_range,
+            byte_range_start,
+            byte_range_length,
         })
     }
 
@@ -1438,10 +1446,11 @@ impl PreloadHint {
             "#EXT-X-PRELOAD-HINT:TYPE={},URI=\"{}\"",
             self.hint_type, self.uri
         )?;
-        if let Some(ref byte_range) = self.byte_range {
-            write!(w, ",BYTERANGE=\"")?;
-            byte_range.write_value_to(w)?;
-            write!(w, "\"")?;
+        if let Some(ref r) = self.byte_range_start {
+            write!(w, ",BYTERANGE-START=\"{}\"", r)?;
+        }
+        if let Some(ref r) = self.byte_range_length {
+            write!(w, ",BYTERANGE-LENGTH=\"{}\"", r)?;
         }
         writeln!(w)
     }

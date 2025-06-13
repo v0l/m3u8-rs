@@ -577,10 +577,8 @@ fn create_and_parse_media_playlist_llhls() {
         preload_hint: Some(PreloadHint {
             hint_type: "PART".into(),
             uri: "next_part.ts".into(),
-            byte_range: Some(ByteRange {
-                length: 50000,
-                offset: Some(100000),
-            }),
+            byte_range_start: Some(50000),
+            byte_range_length: Some(60000),
         }),
         rendition_report: Some(RenditionReport {
             uri: "rendition.m3u8".into(),
