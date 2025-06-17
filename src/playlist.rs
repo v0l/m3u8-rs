@@ -735,7 +735,7 @@ impl SessionData {
 pub struct MediaPlaylist {
     pub version: Option<usize>,
     /// `#EXT-X-TARGETDURATION:<s>`
-    pub target_duration: u64,
+    pub target_duration: f32,
     /// `#EXT-X-MEDIA-SEQUENCE:<number>`
     pub media_sequence: u64,
     pub segments: Vec<MediaSegmentType>,

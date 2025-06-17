@@ -203,7 +203,7 @@ fn create_and_parse_master_playlist_empty() {
 fn create_segment_float_inf() {
     let playlist = Playlist::MediaPlaylist(MediaPlaylist {
         version: Some(6),
-        target_duration: 3,
+        target_duration: 3.0,
         media_sequence: 338559,
         discontinuity_sequence: 1234,
         end_list: true,
@@ -335,7 +335,7 @@ fn create_and_parse_media_playlist_empty() {
 #[test]
 fn create_and_parse_media_playlist_single_segment() {
     let mut playlist_original = Playlist::MediaPlaylist(MediaPlaylist {
-        target_duration: 2,
+        target_duration: 2.,
         segments: vec![MediaSegmentType::Full(MediaSegment {
             uri: "20140311T113819-01-338559live.ts".into(),
             duration: 2.002,
@@ -352,7 +352,7 @@ fn create_and_parse_media_playlist_single_segment() {
 fn create_and_parse_media_playlist_full() {
     let mut playlist_original = Playlist::MediaPlaylist(MediaPlaylist {
         version: Some(4),
-        target_duration: 3,
+        target_duration: 3.,
         media_sequence: 338559,
         discontinuity_sequence: 1234,
         end_list: true,
@@ -480,7 +480,7 @@ fn parsing_binary_data_should_fail_cleanly() {
 fn create_and_parse_media_playlist_llhls() {
     let mut playlist_original = Playlist::MediaPlaylist(MediaPlaylist {
         version: Some(9),
-        target_duration: 2,
+        target_duration: 2.,
         media_sequence: 338559,
         discontinuity_sequence: 1234,
         end_list: false,

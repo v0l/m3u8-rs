@@ -42,7 +42,7 @@
 //!
 //! let playlist = MediaPlaylist {
 //!     version: Some(6),
-//!     target_duration: 3,
+//!     target_duration: 3.,
 //!     media_sequence: 338559,
 //!     discontinuity_sequence: 1234,
 //!     end_list: true,
@@ -74,7 +74,7 @@
 //! WRITE_OPT_FLOAT_PRECISION.store(5, Ordering::Relaxed);
 //!
 //! let playlist = MediaPlaylist {
-//!     target_duration: 3,
+//!     target_duration: 3.,
 //!     segments: vec![
 //!         MediaSegmentType::Full(MediaSegment {
 //!             duration: 2.9,
